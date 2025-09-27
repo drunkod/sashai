@@ -1,0 +1,5 @@
+--- a/chrome/app/chrome_exe_main_aura.cc
++++ b/chrome/app/chrome_exe_main_aura.cc
+@@ -1,1 +1,1 @@
+-// Chromium
++// SashAI Browser
