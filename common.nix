@@ -435,7 +435,6 @@ let
     ++ lib.optional pulseSupport libpulseaudio;
 
     patches = [
-      ./sashai-patches/branding.patch
       ./patches/cross-compile.patch
       # Optional patch to use SOURCE_DATE_EPOCH in compute_build_timestamp.py (should be upstreamed):
       ./patches/no-build-timestamps.patch
