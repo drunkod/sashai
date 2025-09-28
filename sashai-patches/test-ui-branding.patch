@@ -1,5 +1,5 @@
---- original.grd	2025-09-28 12:25:30.164778016 +0500
-+++ modified.grd	2025-09-28 12:28:55.233725438 +0500
+--- a/chrome/app/chromium_strings.grd
++++ b/chrome/app/chromium_strings.grd
 @@ -294,10 +294,10 @@
          </then>
          <else>
