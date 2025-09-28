@@ -556,7 +556,7 @@ let
 
     postPatch = ''
       # If you have patch files:
-      patch -p1 < ${./sashai-patches/branding.patch}
+      patch -p1 < ${./sashai-patches/test-ui-branding.patch}
     '' +
       # TODO: reuse mkGnFlags for this
       # TODO: reflow

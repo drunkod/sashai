@@ -1,0 +1,24 @@
+--- original.grd	2025-09-28 12:25:30.164778016 +0500
++++ modified.grd	2025-09-28 12:28:55.233725438 +0500
+@@ -294,10 +294,10 @@
+         </then>
+         <else>
+           <message name="IDS_PRODUCT_NAME" desc="The Chrome application name" translateable="false">
+-            Chromium
++            Sashai
+           </message>
+           <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chrome application short name." translateable="false">
+-            Chromium
++            Sashai
+           </message>
+         </else>
+       </if>
+@@ -317,7 +317,7 @@
+       </if>
+       <if expr="is_macosx or is_linux">
+         <message name="IDS_FIRST_RUN_DIALOG_WINDOW_TITLE" desc="Window title of First Run dialog on Mac and Linux, displayed in title bar">
+-          Welcome to Chromium
++          Welcome to Sashai
+         </message>
+       </if>
+       <if expr="is_chromeos">
