@@ -192,13 +192,17 @@ async function resolve_DEPS(depot_tools_checkout, chromium_rev) {
 
 
 async function get_latest_chromium_release(platform) {
-  const url = `https://versionhistory.googleapis.com/v1/chrome/platforms/${platform}/channels/stable/versions/all/releases?` + new URLSearchParams({
+  const channel = argv.channel || 'stable'; // Default to 'stable' if no --channel flag
+  console.log(`Fetching latest version from ${channel} channel...`);
+  const url = `https://versionhistory.googleapis.com/v1/chrome/platforms/${platform}/channels/${channel}/versions/all/releases?` + new URLSearchParams({
     order_by: 'version desc',
     filter: 'endtime=none,fraction>=0.5'
   })
 
   const response = await (await fetch(url)).json()
-  return response.releases[0].version
+  const version = response.releases[0].version;
+  console.log(`Fetched ${channel} version: ${version}`);
+  return version
 }
 
 
