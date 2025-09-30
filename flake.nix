@@ -21,7 +21,7 @@
         {
           default = pkgs.callPackage ./default.nix { };
         });
-
+ #test
       apps = forAllSystems (system:
         let
           pkgs = pkgsFor.${system};
@@ -35,6 +35,7 @@
             type = "app";
             program = "${pkgs.writeShellScriptBin "update-chromium" ''
               #!/usr/bin/env bash
+              export PATH=${pkgs.git}/bin:$PATH
               ${pkgs.zx}/bin/zx ${self}/update.mjs --chromium
             ''}/bin/update-chromium";
           };
