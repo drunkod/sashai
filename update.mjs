@@ -4,10 +4,13 @@
 */
 
 cd(__dirname)
-const nixpkgs = (await $`git rev-parse --show-toplevel`).stdout.trim()
-const $nixpkgs = $({
-  cwd: nixpkgs
-})
+
+// For standalone flake, use the nixpkgs input directly
+const nixpkgs = process.env.NIXPKGS_PATH || __dirname
+const isStandaloneFlake = process.env.NIXPKGS_PATH !== undefined
+
+// Different command execution context based on whether we're in nixpkgs or standalone
+const $nixpkgs = isStandaloneFlake ? $ : $({ cwd: nixpkgs })
 
 const dummy_hash = 'sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='
 
@@ -137,7 +140,9 @@ async function fetch_gn(chromium_rev, gn_previous) {
   const commit_date = await get_gitiles_commit_date('https://gn.googlesource.com/gn', rev)
   const version = `0-unstable-${commit_date}`
 
-  const expr = [`(import ./. {}).gn.override { version = "${version}"; rev = "${rev}"; hash = ""; }`]
+  const expr = isStandaloneFlake 
+    ? [`(import ${nixpkgs} {}).gn.override { version = "${version}"; rev = "${rev}"; hash = ""; }`]
+    : [`(import ./. {}).gn.override { version = "${version}"; rev = "${rev}"; hash = ""; }`]
   const derivation = await $nixpkgs`nix-instantiate --expr ${expr}`
 
   return {
@@ -161,7 +166,9 @@ async function get_gitiles_commit_date(base_url, rev) {
 async function fetch_chromedriver_binaries(version) {
   // https://developer.chrome.com/docs/chromedriver/downloads/version-selection
   const prefetch = async (url) => {
-    const expr = [`(import ./. {}).fetchzip { url = "${url}"; hash = ""; }`]
+    const expr = isStandaloneFlake
+      ? [`(import ${nixpkgs} {}).fetchzip { url = "${url}"; hash = ""; }`]
+      : [`(import ./. {}).fetchzip { url = "${url}"; hash = ""; }`]
     const derivation = await $nixpkgs`nix-instantiate --expr ${expr}`
     return await prefetch_FOD(derivation)
   }
@@ -215,7 +222,9 @@ async function get_latest_ungoogled_release() {
 
 
 async function fetch_ungoogled(rev) {
-  const expr = (hash) => [`(import ./. {}).fetchFromGitHub { owner = "ungoogled-software"; repo = "ungoogled-chromium"; rev = "${rev}"; hash = "${hash}"; }`]
+  const expr = (hash) => isStandaloneFlake
+    ? [`(import ${nixpkgs} {}).fetchFromGitHub { owner = "ungoogled-software"; repo = "ungoogled-chromium"; rev = "${rev}"; hash = "${hash}"; }`]
+    : [`(import ./. {}).fetchFromGitHub { owner = "ungoogled-software"; repo = "ungoogled-chromium"; rev = "${rev}"; hash = "${hash}"; }`]
   const hash = await prefetch_FOD('--expr', expr(''))
 
   const checkout = await $nixpkgs`nix-build --expr ${expr(hash)}`
@@ -254,7 +263,9 @@ async function fetch_depot_tools(chromium_rev, depot_tools_previous) {
 
 
 async function prefetch_gitiles(url, rev, hash = '') {
-  const expr = () => [`(import ./. {}).fetchFromGitiles { url = "${url}"; rev = "${rev}"; hash = "${hash}"; }`]
+  const expr = () => isStandaloneFlake
+    ? [`(import ${nixpkgs} {}).fetchFromGitiles { url = "${url}"; rev = "${rev}"; hash = "${hash}"; }`]
+    : [`(import ./. {}).fetchFromGitiles { url = "${url}"; rev = "${rev}"; hash = "${hash}"; }`]
 
   if (hash === '') {
     hash = await prefetch_FOD('--expr', expr())
