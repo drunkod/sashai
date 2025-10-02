@@ -18,7 +18,7 @@ import json
 
 # Default build command
 DEFAULT_BUILD_COMMAND = "env -u http_proxy -u https_proxy -u ftp_proxy -u all_proxy -u no_proxy -u HTTP_PROXY -u HTTPS_PROXY -u FTP_PROXY -u ALL_PROXY -u NO_PROXY ~/nixstatic build .#default --keep-failed -L"
-
+#DEFAULT_BUILD_COMMAND = "~/nixstatic build .#default --keep-failed -L"
 # Default file to update
 DEFAULT_JSON_FILE = "info.json"
 
