@@ -14,9 +14,7 @@
       });
     in
     {
-      # -------------------------------------------------------------------
-      #   1. PACKAGES: Defines what 'nix build' will produce.
-      # -------------------------------------------------------------------
+
       packages = forAllSystems (system:
         let
           pkgs = pkgsFor.${system};
@@ -25,13 +23,10 @@
           default = pkgs.callPackage ./default.nix { };
         });
 
-      # -------------------------------------------------------------------
-      #   2. APPS: Defines runnable scripts for 'nix run'.
-      # -------------------------------------------------------------------
       apps = forAllSystems (system:
         let
           pkgs = pkgsFor.${system};
-          # Read info.json to get the depot_tools rev/hash needed for the scripts.
+
           sashai-info = builtins.fromJSON (builtins.readFile ./info.json);
           depot-tools-pkg = pkgs.fetchFromGitiles {
             url = "https://chromium.googlesource.com/chromium/tools/depot_tools.git";
@@ -40,15 +35,12 @@
           };
         in
         {
-          # --- App to RUN the browser ---
+
           default = {
             type = "app";
             program = "${self.packages.${system}.default}/bin/chromium";
           };
-          
-          # --- App to SET a specific version (Primary Update Tool) ---
-          # This is the most reliable script. It does everything in one go.
-          # Usage: nix run .#set-chromium-version -- 142.0.7444.0
+
           set-chromium-version = {
             type = "app";
             program = "${pkgs.writeShellScriptBin "set-chromium-version" ''
@@ -115,9 +107,6 @@
             ''}/bin/set-chromium-version";
           };
 
-          # --- App to DISCOVER the latest version on a channel ---
-          # Use this to find out what version to use with set-chromium-version.
-          # Usage: nix run .#update-chromium -- --channel canary
           update-chromium = {
             type = "app";
             program = "${pkgs.writeShellScriptBin "update-chromium" ''
@@ -130,9 +119,7 @@
           };
         });
 
-      # -------------------------------------------------------------------
-      #   3. DEV SHELL: For manual debugging and fine-grained control.
-      # -------------------------------------------------------------------
+
       devShells = forAllSystems (system:
         let
           pkgs = pkgsFor.${system};
@@ -172,7 +159,7 @@
           };
         });
 
-      # --- Default package and app for convenience ---
+
       defaultPackage = self.packages.x86_64-linux.default;
       defaultApp = self.apps.x86_64-linux.default;
     };

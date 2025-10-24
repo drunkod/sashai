@@ -477,7 +477,7 @@ let
       # https://github.com/chromium/chromium/commit/69736ffe943ff996d4a88d15eb30103a8c854e29
       # Rebased variant of patch to build M126+ with LLVM 17.
       # staging-next will bump LLVM to 18, so we will be able to drop this soon.
-      ./patches/chromium-126-llvm-17.patch
+      # ./patches/chromium-126-llvm-17.patch
     ]
     ++ lib.optionals (!chromiumVersionAtLeast "140") [
       # Partial revert of https://github.com/chromium/chromium/commit/3687976b0c6d36cf4157419a24a39f6770098d61

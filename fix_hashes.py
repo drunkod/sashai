@@ -19,6 +19,7 @@ import json
 
 # Default build command - using bash with pipefail to get correct exit codes
 DEFAULT_BUILD_COMMAND = "bash -c 'set -o pipefail; ~/nixstatic build .#default --keep-failed -L 2>&1 | tee build.log'"
+#DEFAULT_BUILD_COMMAND = "~/nixstatic build .#default --keep-failed -L"
 # Default file to update
 DEFAULT_JSON_FILE = "info.json"
 

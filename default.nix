@@ -22,15 +22,13 @@
   lib,
   libkrb5,
   widevine-cdm,
-  electron-source, # for warnObsoleteVersionConditional
+  electron-source, 
 
-  # package customization
-  # Note: enable* flags should not require full rebuilds (i.e. only affect the wrapper)
   upstream-info ?
     (lib.importJSON ./info.json).${if !ungoogled then "chromium" else "ungoogled-chromium"},
   proprietaryCodecs ? true,
   enableWideVine ? false,
-  ungoogled ? false, # Whether to build chromium or ungoogled-chromium
+  ungoogled ? false, 
   cupsSupport ? true,
   pulseSupport ? config.pulseaudio or stdenv.hostPlatform.isLinux,
   commandLineArgs ? "",
@@ -41,12 +39,10 @@
 let
   stdenv = pkgs.rustc.llvmPackages.stdenv;
 
-  # Helper functions for changes that depend on specific versions:
   warnObsoleteVersionConditional =
     min-version: result:
     let
       min-supported-version = (lib.head (lib.attrValues electron-source)).unwrapped.info.chromium.version;
-      # Warning can be toggled by changing the value of enabled:
       enabled = false;
     in
     lib.warnIf (enabled && lib.versionAtLeast min-supported-version min-version)
@@ -86,19 +82,13 @@ let
       inherit chromiumVersionAtLeast enableWideVine ungoogled;
     };
 
-    # ungoogled-chromium is, contrary to its name, not a build of
-    # chromium.  It is a patched copy of chromium's *source code*.
-    # Therefore, it needs to come from buildPackages, because it
-    # contains python scripts which get /nix/store/.../bin/python3
-    # patched into their shebangs.
+
     ungoogled-chromium = pkgsBuildBuild.callPackage ./ungoogled.nix { };
   };
 
   sandboxExecutableName = chromium.browser.passthru.sandboxExecutableName;
 
-  # We want users to be able to enableWideVine without rebuilding all of
-  # chromium, so we have a separate derivation here that copies chromium
-  # and adds the unfree WidevineCdm.
+
   chromiumWV =
     let
       browser = chromium.browser;
@@ -124,16 +114,16 @@ stdenv.mkDerivation {
   ];
 
   buildInputs = [
-    # needed for GSETTINGS_SCHEMAS_PATH
+
     gsettings-desktop-schemas
     glib
     gtk3
     gtk4
 
-    # needed for XDG_ICON_DIRS
+
     adwaita-icon-theme
 
-    # Needed for kerberos at runtime
+
     libkrb5
   ];
 
