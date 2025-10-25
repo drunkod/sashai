@@ -487,7 +487,7 @@ let
     ++ lib.optionals (chromiumVersionAtLeast "140") [
       # Rebased variant of the patch above due to
       # https://chromium-review.googlesource.com/c/chromium/src/+/6665907
-      ./patches/chromium-140-rust.patch
+      # ./patches/chromium-140-rust.patch
     ]
     ++ lib.optionals (!ungoogled && !chromiumVersionAtLeast "136") [
       # Note: We since use LLVM v19.1+ on unstable *and* release-24.11 for all version and as such
