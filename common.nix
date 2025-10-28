@@ -300,6 +300,7 @@ let
       perl
       which
       buildPackages.rustc.llvmPackages.bintools
+      buildPackages.rustc.llvmPackages.compiler-rt  
       bison
       gperf
     ]
@@ -484,10 +485,14 @@ let
       # allowing us to use our rustc and our clang.
       ./patches/chromium-129-rust.patch
     ]
-    ++ lib.optionals (chromiumVersionAtLeast "140") [
+    ++ lib.optionals (chromiumVersionAtLeast "136") [
+      # Allow libclang_rt.builtins from compiler-rt >= 16 to be used (from Arch Linux)
+      ./patches/chromium-compiler-rt-adjust-paths.patch
+    ]
+    ++ lib.optionals (chromiumVersionAtLeast "140" && !chromiumVersionAtLeast "142") [
       # Rebased variant of the patch above due to
       # https://chromium-review.googlesource.com/c/chromium/src/+/6665907
-      # ./patches/chromium-140-rust.patch
+      ./patches/chromium-140-rust.patch
     ]
     ++ lib.optionals (!ungoogled && !chromiumVersionAtLeast "136") [
       # Note: We since use LLVM v19.1+ on unstable *and* release-24.11 for all version and as such
