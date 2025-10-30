@@ -1,0 +1,19 @@
+diff --git a/build/rust/allocator/lib.rs b/build/rust/allocator/lib.rs
+index b92aec8..restored 100644
+--- a/build/rust/allocator/lib.rs
++++ b/build/rust/allocator/lib.rs
+@@ -97,6 +97,13 @@ mod both_allocators {
+     }
+ 
+     // Mangle the symbol name as rustc expects.
++    // Re-added for compatibility with older Rust stdlibs (nixpkgs)
++    // Originally removed in https://chromium-review.googlesource.com/c/chromium/src/+/6935385
++    #[rustc_std_internal_symbol]
++    #[allow(non_upper_case_globals)]
++    #[linkage = "weak"]
++    static __rust_alloc_error_handler_should_panic: u8 = 0;
++
+     #[rustc_std_internal_symbol]
+     #[allow(non_upper_case_globals)]
+     #[linkage = "weak"]
+

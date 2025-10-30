@@ -489,6 +489,10 @@ let
       # Allow libclang_rt.builtins from compiler-rt >= 16 to be used (from Arch Linux)
       ./patches/chromium-compiler-rt-adjust-paths.patch
     ]
+    ++ lib.optionals (chromiumVersionAtLeast "142") [
+      # Rust allocator compatibility for nixpkgs Rust stdlib
+      ./patches/chromium-142-rust-allocator-compat.patch
+    ]    
     ++ lib.optionals (chromiumVersionAtLeast "140" && !chromiumVersionAtLeast "142") [
       # Rebased variant of the patch above due to
       # https://chromium-review.googlesource.com/c/chromium/src/+/6665907
@@ -693,13 +697,18 @@ let
         ${ungoogler}/utils/domain_substitution.py apply -r ${ungoogler}/domain_regex.list -f ${ungoogler}/domain_substitution.list -c ./ungoogled-domsubcache.tar.gz .
       '';
 
-    llvmCcAndBintools = symlinkJoin {
-      name = "llvmCcAndBintools";
-      paths = [
-        buildPackages.rustc.llvmPackages.llvm
-        buildPackages.rustc.llvmPackages.stdenv.cc
-      ];
-    };
+      llvmCcAndBintools = symlinkJoin {
+        name = "llvmCcAndBintools";
+        paths = [
+          buildPackages.rustc.llvmPackages.llvm
+          buildPackages.rustc.llvmPackages.stdenv.cc
+        ];
+        postBuild = ''
+          # Create the directory structure Chromium expects for compiler-rt
+          mkdir -p $out/lib/clang/22/lib
+          ln -s ${buildPackages.rustc.llvmPackages.compiler-rt}/lib/linux $out/lib/clang/22/lib/linux
+        '';
+      };
 
     gnFlags = mkGnFlags (
       {
