@@ -567,6 +567,13 @@ let
       # If you have patch files:
       patch -p1 < ${./sashai-patches/test-ui-branding.patch}
     '' +
+      # Disable crabbyavif CFI feature which requires nightly Rust
+      # Context: https://chromium-review.googlesource.com/c/chromium/src/+/6960510
+      lib.optionalString (chromiumVersionAtLeast "142") ''
+        substituteInPlace third_party/crabbyavif/BUILD.gn \
+          --replace-fail '"disable_cfi",' \
+                         '# "disable_cfi",  # nixpkgs: nightly-only feature'
+      '' +
       # TODO: reuse mkGnFlags for this
       # TODO: reflow
       lib.optionalString (!isElectron) ''
